@@ -1,49 +1,109 @@
-const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const dateFormat = require('dateformat');
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const dateFormat = require("dateformat");
 const commonService = require("../services/common.service");
-const setupConfig = require('../config/setup.config');
+const setupConfig = require("../config/setup.config");
 const path = require("path");
+const { AdditionalRecipient } = require("square-connect");
 const rootDir = path.join(__dirname).replace("services", "");
-exports.indentPdf = (invoice,res) => {
-console.log("rootDir---",rootDir);
-  console.log("indent-------",invoice.body);
+
+exports.indentPdf = (invoice, res) => {
+  // let filePath = "uploads/"+storeDetails._id+"/invoices/"+invoiceDetails._id+".pdf";
+  let filePath = "indent.pdf";
+  let indent = invoice.body;
   let doc = new PDFDocument({ size: "A4", margin: 50 });
   generateHeader(doc);
-  generateCustomerInfo(doc, invoice);
-  // generateInvoiceTable(doc, invoice);
+  generateCustomerInfo(doc, indent);
+  generateInvoiceTable(doc, indent);
+  generateSupplierTable(doc,indent);
   // generateFooter(doc);
   doc.end();
-  doc.pipe(fs.createWriteStream(rootDir));
-}
-function generateHeader(doc){
-    doc.image('src/Dinamic_Logo.png',50,45,{ width:50 })
-    .fillColor('#444444')
-    .fontSize(20)
-    .text('DEV Inc.', 110, 57)
-    .fontSize(10)
-    .text('123 Main Street', 200, 65, { align: 'right' })
-    .text('New York, NY, 10025', 200, 80, { align: 'right' })
-    .moveDown();
-}
-function generateCustomerInfo(doc,invoice){
+  doc.pipe(fs.createWriteStream(rootDir + filePath));
+};
+
+function generateHeader(doc) {
   doc
+
     .fillColor("#444444")
     .fontSize(20)
-    .text("Indent Form", 50, 160);
-    generateHr(doc, 185);
-    let dateObj = new Date();
-    let myDate = (dateObj.getUTCDate()) + "/" + (dateObj.getMonth() + 1)+ "/" + (dateObj.getUTCFullYear());
-    doc.fontSize(10)
-    .text(`Name: Deva`,50,200)
-    .text(`Designation: Test`,50 ,215)
-    .text(`Indent No: ${invoice.prf_number}`,50,230)
-    .text(`Indent Date: ${invoice.prf_date}`,300,200,{align: 'right'})
-    .text(`Site: TFC Main Store - CSK - Main Store Block`,300,215,{align: 'right'})
-    .text(`Purpose: ${invoice.purpose}`,300,230,{align: 'right'})
+    .text("DEV Inc.", 110, 57)
+    .fontSize(10)
+    .text("123 Main Street", 200, 65, { align: "right" })
+    .text("New York, NY, 10025", 200, 80, { align: "right" })
     .moveDown();
-    generateHr(doc, 252);
 }
+
+function generateCustomerInfo(doc, invoice) {
+  doc
+    .font("Times-Roman")
+    .fillColor("#444444")
+    .fontSize(25)
+    .text("INDENT FORM", 220, 160);
+  // table;
+  let invoiceTableTop = 180;
+  generateHr(doc, invoiceTableTop + 20);
+  generateVr(doc, 30, invoiceTableTop + 20);
+  
+  
+  doc.font("Helvetica");
+  rowDetails = {
+    field1: "Name",
+    field2: "Deva",
+  };
+  generateTableRow(doc, invoiceTableTop + 30, rowDetails);
+  generateHr(doc, invoiceTableTop + 50);
+  rowDetails = {
+    field1: "Designation",
+    field2: "Head of Stores",
+  };
+  generateTableRow(doc, invoiceTableTop + 60, rowDetails);
+  generateHr(doc, invoiceTableTop + 80);
+  rowDetails = {
+    field1: "Indent No",
+    field2: `${invoice.prf_number}`,
+  };
+  generateTableRow(doc, invoiceTableTop + 90, rowDetails);
+  generateHr(doc, invoiceTableTop + 110);
+  rowDetails = {
+    field1: "Indent Date",
+    field2: `${dateFormat(invoice.prf_date, "dd mmm yyyy")}`,
+  };
+  generateTableRow(doc, invoiceTableTop + 120, rowDetails);
+  generateHr(doc, invoiceTableTop + 140);
+  rowDetails = {
+    field1: "Site",
+    field2: "TFC Main Store - CSK - Main Store Block",
+  }
+  generateTableRow(doc, invoiceTableTop + 150, rowDetails);
+  generateHr(doc, invoiceTableTop + 170);
+  rowDetails = {
+    field1: "Purpose",
+    field2: `${invoice.purpose}`,
+  }
+  generateVr(doc, 300, invoiceTableTop + 20);
+  generateVr(doc, 565, invoiceTableTop + 20);
+
+
+  // doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(300, 350).lineTo(300, 200).stroke();
+
+  // doc
+  //   .fontSize(10)
+  //   .text(`Name: Deva`, 50, 200)
+  //   .text(`Designation: Test`, 50, 215)
+  //   .text(`Indent No: ${invoice.prf_number}`, 50, 230)
+  //   .text(
+  //     `Indent Date: ${dateFormat(invoice.prf_date, "dd mmm yyyy")}`,
+  //     300,
+  //     200,
+  //     { align: "right" }
+  //   )
+  //   .text(`Site: TFC Main Store - CSK - Main Store Block`, 300, 215, {
+  //     align: "right",
+  //   })
+  //   .text(`Purpose: ${invoice.purpose}`, 300, 230, { align: "right" })
+   
+}
+
 // function generateTableRow(doc,y,c1,c2,c3,c4,c5){
 //   doc.fontSize(10)
 //   .text(c1,50,y)
@@ -52,35 +112,106 @@ function generateCustomerInfo(doc,invoice){
 //  .text(c4, 370, y, { width: 90, align: 'right' })
 //   .text(c5, 0, y, { align: 'right' });
 // }
-// function generateInvoiceTable(doc,invoice){
-//   let items = invoice.items;
-//   doc.font("Helvetica-Bold");
-//   generateTableRow(
-//     doc,
-//     330,
-//     "Item",
-//     "Description",
-//     "Unit Cost",
-//     "Quantity",
-//     "Line Total"
-//   );
-//   generateHr(doc, 330 + 20);
-//   doc.font("Helvetica");
-// for (let index = 0; index < items.length; index++) {
-//   const item = items[index];
-//   const position = 330 + (index + 1) * 30;
-//   generateTableRow(
-//     doc,
-//     position,
-//     item.item,
-//     item.description,
-//     item.amount / item.quantity,
-//     item.quantity,
-//     item.amount,
-//   );
-//   generateHr(doc, position + 20)
-//   }
-// }
+
+function generateInvoiceTable(doc,invoice){
+
+  let requirements = invoice.requirement_list;
+  invoiceTop = 500;
+
+  doc
+  .font("Times-Roman")
+  .fillColor("#444444")
+  .fontSize(25)
+  .text("INDENT PRODUCT LIST", 160, 420);
+
+  doc.font("Helvetica-Bold");
+  generateHr(doc, 480);
+  generateInvoiceTableRow(
+    doc,
+    invoiceTop,
+    "No",
+    "Product Name",
+    "Quantity",
+    "Approx Price",
+    "Required Date",
+    "Stock",
+    "Total",
+    "grandTotal"
+  );
+
+  generateHr(doc, 520);
+
+  doc.font("Helvetica");
+for (let index = 0; index < requirements.length; index++) {
+  const requirement = requirements[index];
+  const position = invoiceTop + (index + 1) * 30;
+  generateInvoiceTableRow(
+    doc,
+    position,
+    index + 1,
+    requirement.material,
+    requirement.quantity + " " + requirement.unit,
+    requirement.price,
+   dateFormat(requirement.delivery_date,"dd mmm yyyy"),
+   0,
+    requirement.price * requirement.quantity,
+  );
+  generateHr(doc, position + 20)
+
+if (index == requirements.length -1) {
+  doc.text("grandTotal   20000",450,position + 30),{ align: "justify" ,width: 10},generateSmallVr(doc,30, position +30),generateSmallVr(doc,500, position +30),generateSmallVr(doc,565, position +30);
+  generateHr(doc, position + 50);
+}
+  }
+ 
+}
+
+function generateSupplierTable(doc,invoice){
+
+  let suppliers = invoice.supplier_list;
+  invoiceTop = 750;
+
+  doc
+  .font("Times-Roman")
+  .fillColor("#444444")
+  .fontSize(25)
+  .text("SUPPLIER DETAILS", 160, 720);
+
+  doc.font("Helvetica-Bold");
+  generateHr(doc, 740);
+  generateInvoiceTableRow(
+    doc,
+    invoiceTop,
+    "No",
+    "Name",
+    "Reason",
+    "Contact Person",
+    "Mobile",
+    "Address"
+  );
+
+  generateHr(doc, 520);
+
+  doc.font("Helvetica");
+for (let index = 0; index < suppliers.length; index++) {
+  const supplier = suppliers[index];
+  const position = invoiceTop + (index + 1) * 30;
+  generateInvoiceTableRow(
+    doc,
+    position,
+    index + 1,
+    supplier.company_name,
+    supplier.reason,
+    supplier.contact_person,
+    supplier.mobile,
+   supplier.comp_address,
+  );
+  generateHr(doc, position + 20)
+
+  }
+ 
+}
+
 // function generateFooter(doc) {
 //  doc.fontSize(
 //    10,
@@ -100,6 +231,7 @@ function generateCustomerInfo(doc,invoice){
 //     .lineTo(550, y)
 //     .stroke();
 // }
+
 // exports.ysPayments = function(storeDetails, invoiceDetails) {
 //   return new Promise((resolve, reject) => {
 //     let filePath = "uploads/"+storeDetails._id+"/invoices/"+invoiceDetails._id+".pdf";
@@ -170,6 +302,7 @@ function generateCustomerInfo(doc,invoice){
 //     .text(storeDetails.name, 320, 205)
 //     .text(storeDetails.gst_no, 320, 223)
 //     .text(storeDetails.company_details.address.replace(new RegExp('\n', 'g'), " "), 320, 241)
+
 //     // table
 //     let invoiceTableTop = 350;
 //     doc.font("Helvetica-Bold");
@@ -190,6 +323,7 @@ function generateCustomerInfo(doc,invoice){
 //     generateTableRow(doc, invoiceTableTop+120, rowDetails);
 //     generateHr(doc, invoiceTableTop+140);
 //     invoiceTableTop += 60;
+
 //     // tax
 //     if(invoiceDetails.igst && invoiceDetails.igst.percentage) {
 //       rowDetails = { "field1": "5", "field2": "Tax ("+invoiceDetails.igst.percentage+"% IGST)", "field3": commonService.rupeesFormat(invoiceDetails.igst.amount) };
@@ -259,18 +393,59 @@ function generateCustomerInfo(doc,invoice){
 //     }
 //   });
 // }
-// function generateTableRow(doc, y, rowDetails) {
-//   doc
-//   .fontSize(10)
-//   .text(rowDetails.field1, 30, y)
-//   .text(rowDetails.field2, 80, y)
-//   .text(rowDetails.field3, 280, y, { align: "right" });
-// }
-function generateHr(doc, y) {
+
+function generateTableRow(doc, y, rowDetails) {
   doc
-  .strokeColor("#AAAAAA")
-  .lineWidth(1)
-  .moveTo(30, y)
-  .lineTo(565, y)
-  .stroke();
+    .fontSize(10)
+    .text(rowDetails.field1, 40, y)
+    .text(rowDetails.field2, 310, y,{ align: "left" });
+    // .text(rowDetails.field3, 280, y, { align: "right" });
 }
+
+function generateInvoiceTableRow(
+  doc,
+  y,
+  No,
+  ProductName,
+  Quantity,
+  ApproxPrice,
+  RequiredDate,
+  Stock,
+  Total,
+  grandTotal
+) {
+
+  doc
+    .fontSize(10)
+    .text(No, 50, y,{ align: "justify",padding: "10" },generateSmallVr(doc,30, y ))
+    .text(ProductName, 100, y,{ align: "justify" ,padding: "10"},generateSmallVr(doc,80, y))
+    .text(Quantity, 190, y,{ align: "justify", width: 90 },generateSmallVr(doc,180, y))
+    .text(ApproxPrice, 290, y,{ align: "left" },generateSmallVr(doc,280, y))
+    .text(RequiredDate, 370, y,{ align: "justify" },generateSmallVr(doc,360, y))
+    .text(Stock, 470, y,{ align: "justify" },generateSmallVr(doc,460, y))
+    .text(Total, 510, y,{ align: "justify" },generateSmallVr(doc,500, y),generateSmallVr(doc,565, y))
+    
+}
+
+function generateHr(doc, y) {
+  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(30, y).lineTo(565, y).stroke();
+}
+
+function generateVr(doc,x, y) {
+  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(x, y + 150).lineTo(x, y).stroke();
+}
+function generateSmallVr(doc,x, y) {               //side  // start 532           //side   //to (hight)
+  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(x, y - 20).lineTo(x, y + 20).stroke();
+}
+
+// function Addition(value){
+
+//   // appCharges = invoiceDetails.app_list.reduce((accumulator, currentValue) => {
+//   //   //         return accumulator + currentValue['price'];
+//   //   //       }, 0);
+
+
+//   value.reduce((previous,current)=>{
+//     return previous + current['total'];
+//   },0);
+// }

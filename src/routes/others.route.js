@@ -2,6 +2,7 @@
 const router = require("express").Router();
 const commonController = require("../controllers/others/common.controller");
 const sendMail = require("../../services/mail.service");
+const createPDF = require("../../services/pdf_generator.service")
 // const storeController = require('../controllers/others/store.controller');
 // const paymentController = require('../controllers/others/payment.controller');
 // const deployController = require('../controllers/others/deploy.controller');
