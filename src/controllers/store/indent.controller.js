@@ -32,7 +32,6 @@ exports.details = (req, res) => {
 };
 
 exports.createIndent = (req, res) => {
-  console.log("bodyyyyy",req.body);
   
   req.body.store_id = req.id;
   indentModel.create(req.body, function (err, response) {
@@ -45,7 +44,6 @@ exports.createIndent = (req, res) => {
 };
 
 exports.updateIndent = (req, res) => {
-  console.log("update", req);
   indentModel.findOne(
     {
       store_id: mongoose.Types.ObjectId(req.id),

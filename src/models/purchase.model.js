@@ -29,6 +29,7 @@ const purchaseSchema = new mongoose.Schema({
   reference_no: String,
   reference_date: String,
   po_subject: String,
+  status: {type: String, default: "active"},
   purchase_list: [purchaseList],
   comp_gstin: String,
   vend_gstin: String,

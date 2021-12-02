@@ -14,6 +14,7 @@ const setupConfig = require("../config/setup.config");
 const mailTemp = require("../config/mail-templates");
 const commonService = require("../services/common.service");
 const notifyService = require("../services/notify.service");
+const path = require("path");
 const _this = this;
 
 /** admin mail **/
@@ -41,16 +42,21 @@ exports.sendMailFromAdmin = function (jsonData, callback) {
 
 /** store mail **/
 exports.sendMailFromStore = function (jsonData, res) {
+  console.log("fileName------",jsonData.body.fileName);
   let mailConfig = setupConfig.mail_config;
   if (!mailConfig.send_from) {
     mailConfig.send_from = " <" + mailConfig.transporter.auth.user + ">";
   }
+  let rootDir = path.join(__dirname).replace("services","")
+  let fileUrl = rootDir + jsonData.body.fileName + ".pdf";
+
   let transporter = nodemailer.createTransport(mailConfig.transporter);
   let mailOptions = {
     from: mailConfig.send_from,
     to: jsonData.body.to,
     subject: jsonData.body.subject,
     text: jsonData.body.message,
+    attachments: [{ filename: jsonData.body.fileName + ".pdf", path:  fileUrl}],
     // html: jsonData.body.message.toString(),
   };
   if (jsonData.cc_mail) {
@@ -75,6 +81,7 @@ exports.sendMailFromStoreWithAttachment = function (jsonData, callback) {
   }
   let transporter = nodemailer.createTransport(mailConfig.transporter);
   let fileUrl = setupConfig.api_base + jsonData.file_name;
+
   let mailOptions = {
     from: mailConfig.send_from,
     to: jsonData.sendTo,

@@ -99,6 +99,9 @@ app.use("/store", verifyToken, storeRoutes);
 // app.use('/guest', guestRoutes);
 // app.use('/guest_user', verifyToken, guestUserRoutes);
 app.use("/others", otherRoutes);
+
+// app.use('/pdf', express.static(__dirname + '/PRF-TES-0002.pdf'));
+// console.log("------",__dirname);
 // app.use('/jenkin', jenkin);
 
 app.get("/", function (req, res) {
