@@ -11,6 +11,8 @@ router.route("/check_email").post(commonController.check_email_availability);
 router.route("/sendmail").post(sendMail.sendMailFromStore);
 
 router.route("/pdf").post(createPDF.indentPdf);
+
+
 // router
 //     .route('/campaign_enquiry')
 //     .post(commonController.campaign_enquiry)

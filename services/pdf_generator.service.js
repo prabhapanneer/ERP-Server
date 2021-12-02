@@ -8,9 +8,8 @@ const { AdditionalRecipient } = require("square-connect");
 const rootDir = path.join(__dirname).replace("services", "");
 
 exports.indentPdf = (invoice, res) => {
-  // let filePath = "uploads/"+storeDetails._id+"/invoices/"+invoiceDetails._id+".pdf";
-  let filePath = "indent.pdf";
   let indent = invoice.body;
+  let filePath = indent.prf_number+".pdf";
   let doc = new PDFDocument({ size: "A4", margin: 50 });
   generateHeader(doc);
   generateCustomerInfo(doc, indent);
@@ -23,25 +22,25 @@ exports.indentPdf = (invoice, res) => {
 
 function generateHeader(doc) {
   doc
-
     .fillColor("#444444")
     .fontSize(20)
-    .text("DEV Inc.", 110, 57)
+    .text("DEV Inc.", 30, 57)
     .fontSize(10)
-    .text("123 Main Street", 200, 65, { align: "right" })
-    .text("New York, NY, 10025", 200, 80, { align: "right" })
+    // .text("123 Main Street", 200, 65, { align: "right" })
+    // .text("New York, NY, 10025", 200, 80, { align: "right" })
     .moveDown();
 }
 
 function generateCustomerInfo(doc, invoice) {
-  
+
+  let invoiceTableTop = 130;
   doc
     .font("Times-Roman")
     .fillColor("#444444")
     .fontSize(20)
-    .text("INDENT FORM", 220, 120);
+    .text("INDENT FORM", 220, invoiceTableTop - 10)
+    .moveDown();
   // table;
-  let invoiceTableTop = 130;
   generateHr(doc, invoiceTableTop + 20);
   generateVr(doc, 30, invoiceTableTop + 20);
   
@@ -99,11 +98,12 @@ function generateInvoiceTable(doc,invoice){
   doc
   .font("Times-Roman")
   .fillColor("#444444")
-  .fontSize(25)
-  .text("INDENT PRODUCT LIST", 160, 350);
+  .fontSize(20)
+  .text("INDENT PRODUCT LIST", 180, invoiceTop-60)
+  .moveDown();
 
   doc.font("Helvetica-Bold");
-  generateHr(doc, invoiceTop - 20);
+  generateHr(doc, invoiceTop - 10);
   generateInvoiceTableRow(
     doc,
     invoiceTop,
@@ -120,9 +120,43 @@ function generateInvoiceTable(doc,invoice){
   generateHr(doc, invoiceTop + 20);
 
   doc.font("Helvetica");
+  let count = 0;
 for (let index = 0; index < requirements.length; index++) {
   const requirement = requirements[index];
-  const position = invoiceTop + (index + 1) * 30;
+  let position = invoiceTop + (index + 1) * 30;
+
+  if(index == 11){
+    invoiceTop = 100
+    doc.addPage()
+    doc
+    .font("Times-Roman")
+    .fillColor("#444444")
+    .fontSize(20)
+    .text("INDENT PRODUCT LIST", 180, invoiceTop-60)
+    .moveDown();
+  
+    doc.font("Helvetica-Bold");
+    generateHr(doc, invoiceTop - 10);
+    generateInvoiceTableRow(
+      doc,
+      invoiceTop,
+      "No",
+      "Product Name",
+      "Quantity",
+      "Approx Price",
+      "Required Date",
+      "Stock",
+      "Total",
+      "grandTotal"
+    );
+    generateHr(doc, invoiceTop + 20);
+  }
+
+  if (index >= 11) {
+    position = 100 + (count + 1) * 30;
+    count++;
+  }
+  doc.font("Helvetica");
   generateInvoiceTableRow(
     doc,
     position,
@@ -136,28 +170,35 @@ for (let index = 0; index < requirements.length; index++) {
   );
   generateHr(doc, position + 20)
 
-if (index == requirements.length -1) {
-  doc.text("grandTotal   20000",450,position + 30),{ align: "justify" ,width: 10},generateSmallVr(doc,30, position +30),generateSmallVr(doc,500, position +30),generateSmallVr(doc,565, position +30);
-  generateHr(doc, position + 50);
-}
+    if (index == requirements.length -1) {
+      invoiceTop = position;
+      doc.text("Grand Total     20000",440,position + 30),{ align: "justify" ,width: 10},generateSmallVr(doc,30, position +30),generateSmallVr(doc,500, position +30),generateSmallVr(doc,565, position +30);
+      generateHr(doc, position + 50);
+    }
   }
- 
+  
 }
+
+
 
 function generateSupplierTable(doc,invoice){
 
   let suppliers = invoice.supplier_list;
-  invoiceTop = 750;
-
+  console.log("invoice-----",invoiceTop);
+  invoiceTop += 200
+  if (invoiceTop >= 520) {
+    doc.addPage()
+    invoiceTop = 100
+  }
   doc
   .font("Times-Roman")
   .fillColor("#444444")
-  .fontSize(25)
-  .text("SUPPLIER DETAILS", 160, 720);
+  .fontSize(20)
+  .text("SUPPLIER DETAILS", 210,invoiceTop - 50);
 
   doc.font("Helvetica-Bold");
-  generateHr(doc, 740);
-  generateInvoiceTableRow(
+  generateHr(doc, invoiceTop -10);
+  generateSupplyTableRow(
     doc,
     invoiceTop,
     "No",
@@ -168,13 +209,13 @@ function generateSupplierTable(doc,invoice){
     "Address"
   );
 
-  generateHr(doc, 520);
+  generateHr(doc, invoiceTop + 20);
 
   doc.font("Helvetica");
-for (let index = 0; index < suppliers.length; index++) {
-  const supplier = suppliers[index];
-  const position = invoiceTop + (index + 1) * 30;
-  generateInvoiceTableRow(
+  for (let index = 0; index < suppliers.length; index++) {
+    const supplier = suppliers[index];
+    const position = invoiceTop + (index + 1) * 30;
+  generateSupplyTableRow(
     doc,
     position,
     index + 1,
@@ -184,10 +225,79 @@ for (let index = 0; index < suppliers.length; index++) {
     supplier.mobile,
    supplier.comp_address,
   );
+
   generateHr(doc, position + 20)
 
   }
  
+}
+
+function generateTableRow(doc, y, rowDetails) {
+  doc
+    .fontSize(10)
+    .text(rowDetails.field1, 40, y)
+    .text(rowDetails.field2, 310, y,{ align: "left" });
+    // .text(rowDetails.field3, 280, y, { align: "right" });
+}
+
+function generateInvoiceTableRow(
+  doc,
+  y,
+  No,
+  ProductName,
+  Quantity,
+  ApproxPrice,
+  RequiredDate,
+  Stock,
+  Total
+) {
+
+  doc
+    .fontSize(10)
+    .text(No, 50, y,{ align: "justify",padding: "10" },generateSmallVr(doc,30, y ))
+    .text(ProductName, 100, y,{ align: "justify" ,padding: "10"},generateSmallVr(doc,80, y))
+    .text(Quantity, 190, y,{ align: "justify", width: 90 },generateSmallVr(doc,180, y))
+    .text(ApproxPrice, 290, y,{ align: "left" },generateSmallVr(doc,280, y))
+    .text(RequiredDate, 370, y,{ align: "justify" },generateSmallVr(doc,360, y))
+    .text(Stock, 470, y,{ align: "justify" },generateSmallVr(doc,460, y))
+    .text(Total, 510, y,{ align: "justify" },generateSmallVr(doc,500, y),generateSmallVr(doc,565, y))
+    
+}
+
+function generateSupplyTableRow(
+  doc,
+  y,
+  No,
+  Name,
+  Reason,
+  ContactPerson,
+  Mobile,
+  Address,
+) {
+
+  doc
+    .fontSize(10)
+    .text(No, 50, y,{ align: "justify",padding: "10" },generateSmallVr(doc,30, y ))
+    .text(Name, 100, y,{ align: "justify" ,padding: "10"},generateSmallVr(doc,80, y))
+    .text(Reason, 190, y,{ align: "justify", width: 90 },generateSmallVr(doc,170, y))
+    .text(ContactPerson, 270, y,{ align: "justify" },generateSmallVr(doc,260, y))
+    .text(Mobile, 370, y,{ align: "justify" },generateSmallVr(doc,360, y))
+    .text(Address, 470, y,{ align: "justify" },generateSmallVr(doc,460, y),generateSmallVr(doc,565, y))
+    // .text(Total, 510, y,{ align: "justify" },generateSmallVr(doc,500, y),generateSmallVr(doc,565, y))
+    
+}
+
+
+// lines
+function generateHr(doc, y) {
+  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(30, y).lineTo(565, y).stroke();
+}
+
+function generateVr(doc,x, y) {
+  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(x, y + 150).lineTo(x, y).stroke();
+}
+function generateSmallVr(doc,x, y) {               //side  // start 532           //side   //to (hight)
+  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(x, y - 10).lineTo(x, y + 20).stroke();
 }
 
 // function generateFooter(doc) {
@@ -200,6 +310,7 @@ for (let index = 0; index < suppliers.length; index++) {
 //    { align: 'center', width: 500 },
 //  );
 // }
+
 // //For line
 // function generateHr(doc, y) {
 //   doc
@@ -372,49 +483,6 @@ for (let index = 0; index < suppliers.length; index++) {
 //   });
 // }
 
-function generateTableRow(doc, y, rowDetails) {
-  doc
-    .fontSize(10)
-    .text(rowDetails.field1, 40, y)
-    .text(rowDetails.field2, 310, y,{ align: "left" });
-    // .text(rowDetails.field3, 280, y, { align: "right" });
-}
-
-function generateInvoiceTableRow(
-  doc,
-  y,
-  No,
-  ProductName,
-  Quantity,
-  ApproxPrice,
-  RequiredDate,
-  Stock,
-  Total,
-  grandTotal
-) {
-
-  doc
-    .fontSize(10)
-    .text(No, 50, y,{ align: "justify",padding: "10" },generateSmallVr(doc,30, y ))
-    .text(ProductName, 100, y,{ align: "justify" ,padding: "10"},generateSmallVr(doc,80, y))
-    .text(Quantity, 190, y,{ align: "justify", width: 90 },generateSmallVr(doc,180, y))
-    .text(ApproxPrice, 290, y,{ align: "left" },generateSmallVr(doc,280, y))
-    .text(RequiredDate, 370, y,{ align: "justify" },generateSmallVr(doc,360, y))
-    .text(Stock, 470, y,{ align: "justify" },generateSmallVr(doc,460, y))
-    .text(Total, 510, y,{ align: "justify" },generateSmallVr(doc,500, y),generateSmallVr(doc,565, y))
-    
-}
-
-function generateHr(doc, y) {
-  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(30, y).lineTo(565, y).stroke();
-}
-
-function generateVr(doc,x, y) {
-  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(x, y + 150).lineTo(x, y).stroke();
-}
-function generateSmallVr(doc,x, y) {               //side  // start 532           //side   //to (hight)
-  doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(x, y - 20).lineTo(x, y + 20).stroke();
-}
 
 // function Addition(value){
 
