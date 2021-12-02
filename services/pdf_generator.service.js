@@ -34,98 +34,76 @@ function generateHeader(doc) {
 }
 
 function generateCustomerInfo(doc, invoice) {
+  
   doc
     .font("Times-Roman")
     .fillColor("#444444")
-    .fontSize(25)
-    .text("INDENT FORM", 220, 160);
+    .fontSize(20)
+    .text("INDENT FORM", 220, 120);
   // table;
-  let invoiceTableTop = 180;
+  let invoiceTableTop = 130;
   generateHr(doc, invoiceTableTop + 20);
   generateVr(doc, 30, invoiceTableTop + 20);
-  
   
   doc.font("Helvetica");
   rowDetails = {
     field1: "Name",
     field2: "Deva",
   };
+
   generateTableRow(doc, invoiceTableTop + 30, rowDetails);
   generateHr(doc, invoiceTableTop + 50);
   rowDetails = {
     field1: "Designation",
     field2: "Head of Stores",
   };
+
   generateTableRow(doc, invoiceTableTop + 60, rowDetails);
   generateHr(doc, invoiceTableTop + 80);
   rowDetails = {
     field1: "Indent No",
     field2: `${invoice.prf_number}`,
   };
+
   generateTableRow(doc, invoiceTableTop + 90, rowDetails);
   generateHr(doc, invoiceTableTop + 110);
   rowDetails = {
     field1: "Indent Date",
     field2: `${dateFormat(invoice.prf_date, "dd mmm yyyy")}`,
   };
+
   generateTableRow(doc, invoiceTableTop + 120, rowDetails);
   generateHr(doc, invoiceTableTop + 140);
   rowDetails = {
     field1: "Site",
     field2: "TFC Main Store - CSK - Main Store Block",
   }
+
   generateTableRow(doc, invoiceTableTop + 150, rowDetails);
   generateHr(doc, invoiceTableTop + 170);
   rowDetails = {
     field1: "Purpose",
     field2: `${invoice.purpose}`,
   }
+
   generateVr(doc, 300, invoiceTableTop + 20);
   generateVr(doc, 565, invoiceTableTop + 20);
 
-
-  // doc.strokeColor("#AAAAAA").lineWidth(1).moveTo(300, 350).lineTo(300, 200).stroke();
-
-  // doc
-  //   .fontSize(10)
-  //   .text(`Name: Deva`, 50, 200)
-  //   .text(`Designation: Test`, 50, 215)
-  //   .text(`Indent No: ${invoice.prf_number}`, 50, 230)
-  //   .text(
-  //     `Indent Date: ${dateFormat(invoice.prf_date, "dd mmm yyyy")}`,
-  //     300,
-  //     200,
-  //     { align: "right" }
-  //   )
-  //   .text(`Site: TFC Main Store - CSK - Main Store Block`, 300, 215, {
-  //     align: "right",
-  //   })
-  //   .text(`Purpose: ${invoice.purpose}`, 300, 230, { align: "right" })
-   
 }
-
-// function generateTableRow(doc,y,c1,c2,c3,c4,c5){
-//   doc.fontSize(10)
-//   .text(c1,50,y)
-//   .text(c2, 150, y)
-//  .text(c3, 280, y, { width: 90, align: 'right' })
-//  .text(c4, 370, y, { width: 90, align: 'right' })
-//   .text(c5, 0, y, { align: 'right' });
-// }
 
 function generateInvoiceTable(doc,invoice){
 
   let requirements = invoice.requirement_list;
-  invoiceTop = 500;
+  invoiceTop = 400;
 
   doc
   .font("Times-Roman")
   .fillColor("#444444")
   .fontSize(25)
-  .text("INDENT PRODUCT LIST", 160, 420);
+  .text("INDENT PRODUCT LIST", 160, 350);
 
   doc.font("Helvetica-Bold");
-  generateHr(doc, 480);
+  generateHr(doc, invoiceTop - 20);
   generateInvoiceTableRow(
     doc,
     invoiceTop,
@@ -139,7 +117,7 @@ function generateInvoiceTable(doc,invoice){
     "grandTotal"
   );
 
-  generateHr(doc, 520);
+  generateHr(doc, invoiceTop + 20);
 
   doc.font("Helvetica");
 for (let index = 0; index < requirements.length; index++) {
