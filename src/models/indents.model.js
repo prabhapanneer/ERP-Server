@@ -29,6 +29,7 @@ const supplierSchema = new mongoose.Schema({
 //   // cancel_status: Number,
 //   // mail_datetime: Date,
 // });
+
 const indentSchema = new mongoose.Schema({
   store_id: { type: mongoose.Schema.Types.ObjectId, required: true },
   created_on: { type: Date, default: Date.now },

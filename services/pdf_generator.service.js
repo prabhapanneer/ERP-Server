@@ -18,6 +18,9 @@ exports.indentPdf = (invoice, res) => {
   // generateFooter(doc);
   doc.end();
   doc.pipe(fs.createWriteStream(rootDir + filePath));
+
+  // console.log("res-----",res);
+  // res.send("Working")
 };
 
 function generateHeader(doc) {
@@ -184,11 +187,15 @@ for (let index = 0; index < requirements.length; index++) {
 function generateSupplierTable(doc,invoice){
 
   let suppliers = invoice.supplier_list;
-  console.log("invoice-----",invoiceTop);
-  invoiceTop += 200
-  if (invoiceTop >= 520) {
-    doc.addPage()
-    invoiceTop = 100
+  console.log("invoice 111-----",invoiceTop);
+  if (invoice.requirement_list.length <= 5 && suppliers.length <= 2) {
+    invoiceTop += 150
+  }else{
+    invoiceTop += 200
+    if (invoiceTop >= 520) {
+      doc.addPage()
+      invoiceTop = 100
+    }
   }
   doc
   .font("Times-Roman")
