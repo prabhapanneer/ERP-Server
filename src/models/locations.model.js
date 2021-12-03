@@ -24,6 +24,7 @@ const mongoose = require('mongoose');
 
 const locationSchema = new mongoose.Schema({
 	store_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    branch_id: { type: mongoose.Schema.Types.ObjectId,default:new mongoose.Types.ObjectId(), required: true },
     created_on: { type: Date, default: Date.now },  
     name: { type: String, required: true },
     mobile: { type: String},
