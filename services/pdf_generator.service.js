@@ -1,3 +1,4 @@
+// const PDFDocument = require("pdfkit");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const dateFormat = require("dateformat");
@@ -9,18 +10,39 @@ const rootDir = path.join(__dirname).replace("services", "");
 
 exports.indentPdf = (invoice, res) => {
   let indent = invoice.body;
-  let filePath = indent.prf_number+".pdf";
+  console.log();
+      let filePath = "uploads/"+indent.store_id+"/indents/"+indent.prf_number+".pdf";
+  // let filePath = indent.prf_number+".pdf";
   let doc = new PDFDocument({ size: "A4", margin: 50 });
   generateHeader(doc);
   generateCustomerInfo(doc, indent);
   generateInvoiceTable(doc, indent);
   generateSupplierTable(doc,indent);
   // generateFooter(doc);
-  doc.end();
-  doc.pipe(fs.createWriteStream(rootDir + filePath));
-
-  // console.log("res-----",res);
-  // res.send("Working")
+  let rootPath = rootDir+"uploads/"+indent.store_id+"/indents";
+    if(!fs.existsSync(rootPath)) {
+      fs.mkdir(rootPath, { recursive: true }, (err) => {
+        if(!err) {
+          let writeStream = fs.createWriteStream(rootDir+filePath);
+          
+          doc.pipe(writeStream);
+          doc.end();
+          writeStream.on('finish', function () {
+          });
+        }
+        else {
+         console.log("unable to create directory");
+        }
+      });
+    }
+    else {
+      let writeStream = fs.createWriteStream(rootDir+filePath);
+      doc.pipe(writeStream);
+      doc.end();
+      writeStream.on('finish', function () {
+      });
+    }
+  // doc.pipe(fs.createWriteStream(rootDir + filePath));
 };
 
 function generateHeader(doc) {
@@ -175,11 +197,11 @@ for (let index = 0; index < requirements.length; index++) {
 
     if (index == requirements.length -1) {
       invoiceTop = position;
-      doc.text("Grand Total     20000",440,position + 30),{ align: "justify" ,width: 10},generateSmallVr(doc,30, position +30),generateSmallVr(doc,500, position +30),generateSmallVr(doc,565, position +30);
+      doc.font("Helvetica-Bold").text(`Grand Total     ${invoice.grand_total}`,440,position + 30),{ align: "justify" ,width: 10},generateSmallVr(doc,30, position +30),generateSmallVr(doc,500, position +30),generateSmallVr(doc,565, position +30);
       generateHr(doc, position + 50);
     }
   }
-  
+  doc.font("Helvetica")
 }
 
 
@@ -187,7 +209,6 @@ for (let index = 0; index < requirements.length; index++) {
 function generateSupplierTable(doc,invoice){
 
   let suppliers = invoice.supplier_list;
-  console.log("invoice 111-----",invoiceTop);
   if (invoice.requirement_list.length <= 5 && suppliers.length <= 2) {
     invoiceTop += 150
   }else{
@@ -462,31 +483,31 @@ function generateSmallVr(doc,x, y) {               //side  // start 532         
 //     doc
 //     .fontSize(10)
 //     .text("Thank you for your business.", 30, 800, { align: "center", width: 500 });
-//     let rootPath = rootDir+"uploads/"+storeDetails._id+"/invoices";
-//     if(!fs.existsSync(rootPath)) {
-//       fs.mkdir(rootPath, { recursive: true }, (err) => {
-//         if(!err) {
-//           let writeStream = fs.createWriteStream(rootDir+filePath);
-//           doc.pipe(writeStream);
-//           doc.end();
-//           writeStream.on('finish', function () {
-//               console.log("124")
-//             resolve(true);
-//           });
-//         }
-//         else {
-//           resolve("unable to create directory");
-//         }
-//       });
-//     }
-//     else {
-//       let writeStream = fs.createWriteStream(rootDir+filePath);
-//       doc.pipe(writeStream);
-//       doc.end();
-//       writeStream.on('finish', function () {
-//         resolve(filePath);
-//       });
-//     }
+    // let rootPath = rootDir+"uploads/"+storeDetails._id+"/invoices";
+    // if(!fs.existsSync(rootPath)) {
+    //   fs.mkdir(rootPath, { recursive: true }, (err) => {
+    //     if(!err) {
+    //       let writeStream = fs.createWriteStream(rootDir+filePath);
+    //       doc.pipe(writeStream);
+    //       doc.end();
+    //       writeStream.on('finish', function () {
+    //           console.log("124")
+    //         resolve(true);
+    //       });
+    //     }
+    //     else {
+    //       resolve("unable to create directory");
+    //     }
+    //   });
+    // }
+    // else {
+    //   let writeStream = fs.createWriteStream(rootDir+filePath);
+    //   doc.pipe(writeStream);
+    //   doc.end();
+    //   writeStream.on('finish', function () {
+    //     resolve(filePath);
+    //   });
+    // }
 //   });
 // }
 
