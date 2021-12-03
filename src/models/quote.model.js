@@ -23,6 +23,7 @@ const vendorSchema = new mongoose.Schema({
 
 const quote_list_Schema = new mongoose.Schema({
   store_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  branch_id: { type: mongoose.Schema.Types.ObjectId,default:new mongoose.Types.ObjectId(), required: true },
   created_on: { type: Date, default: Date.now },
   type: String,
   category: String,
