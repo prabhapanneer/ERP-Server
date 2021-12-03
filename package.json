@@ -38,10 +38,7 @@
     "path": "^0.12.7",
     "paypal-rest-sdk": "^1.8.1",
     "pdfkit": "^0.13.0",
-<<<<<<< HEAD
-=======
     "pdfkit-table": "0.1.70",
->>>>>>> 979d70c2a7e90e8a09fa6cf3e2f5e8d1d3f2ced8
     "razorpay": "^2.0.5",
     "request": "^2.88.0",
     "sharp": "^0.28.1",
