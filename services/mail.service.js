@@ -48,8 +48,8 @@ exports.sendMailFromStore = function (jsonData, res) {
     mailConfig.send_from = " <" + mailConfig.transporter.auth.user + ">";
   }
   let rootDir = path.join(__dirname).replace("services","")
-  let fileUrl = rootDir + jsonData.body.fileName + ".pdf";
-
+  let fileUrl = rootDir+"uploads/61793dbc04f7692a94d06b1d/indents/" + jsonData.body.fileName + ".pdf";
+console.log("fileurl------",fileUrl);
   let transporter = nodemailer.createTransport(mailConfig.transporter);
   let mailOptions = {
     from: mailConfig.send_from,
