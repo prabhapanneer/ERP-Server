@@ -34,14 +34,14 @@ exports.indentPdf = (invoice) => {
   if (invoice.body.quote_number && invoice.body.po_number) {
     console.log("purchase folder");
     let PO = invoice.body;
-    var filePath = "uploads/" + PO.store_id + "/PO/" + PO.quote_number + ".pdf";
+    var filePath = "uploads/" + PO.store_id + "/PO/" + PO.po_number + ".pdf";
     generateHeader(doc);
     generatePoSubject(doc, PO);
     // generateCustomerInfo(doc, PO);
-    generateVendorTable(doc, PO);
+    // generateVendorTable(doc, PO);
     // generateSupplierTable(doc, quote);
     // generateFooter(doc);
-    var rootPath = rootDir + "uploads/" + quote.store_id + "/PO";
+    var rootPath = rootDir + "uploads/" + PO.store_id + "/PO";
   } else if (invoice.body.quote_number && !invoice.body.po_number) {
     console.log("quote folder");
     let quote = invoice.body;
