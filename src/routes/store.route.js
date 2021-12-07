@@ -11,6 +11,7 @@ const materialsController = require("../controllers/store/materials.controller")
 const userlistController = require("../controllers/store/userlist.controller");
 const quoteController = require("../controllers/store/quote.controller");
 const purchaseController = require("../controllers/store/purchase.controller");
+const inventoryController = require("../controllers/store/inventory.controller");
 
 // locations
 router
@@ -135,6 +136,8 @@ router
   .patch(quoteController.hard_remove);
 router.route("/quotes/details").post(quoteController.details);
 
+// purchase
+
 router
   .route("/purchases")
   .get(purchaseController.getAllPurchase)
@@ -143,6 +146,17 @@ router
   // .patch(purchaseController.soft_remove)
   .patch(purchaseController.hard_remove);
 router.route("/purchases/details").post(purchaseController.details);
+
+// Inventory
+
+router
+  .route("/inventory")
+  .get(inventoryController.getAllInventory)
+  .post(inventoryController.createInventory)
+  .put(inventoryController.updateInventory)
+  // .patch(inventoryController.soft_remove)
+  .patch(inventoryController.hard_remove);
+router.route("/inventory/details").post(inventoryController.details);
 
 // const storeController = require('../controllers/store/store.controller');
 // const catalogController = require('../controllers/store/catalog.controller');
