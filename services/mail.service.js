@@ -42,21 +42,42 @@ exports.sendMailFromAdmin = function (jsonData, callback) {
 
 /** store mail **/
 exports.sendMailFromStore = function (jsonData, res) {
-  console.log("fileName------",jsonData.body.fileName);
+  console.log("fileName------", jsonData.body.fileName);
   let mailConfig = setupConfig.mail_config;
   if (!mailConfig.send_from) {
     mailConfig.send_from = " <" + mailConfig.transporter.auth.user + ">";
   }
-  let rootDir = path.join(__dirname).replace("services","")
-  let fileUrl = rootDir+"uploads/61793dbc04f7692a94d06b1d/indents/" + jsonData.body.fileName + ".pdf";
-console.log("fileurl------",fileUrl);
+  let rootDir = path.join(__dirname).replace("services", "");
+  let fileUrl;
+  if (jsonData.body.mail_for == "indent") {
+    fileUrl =
+      rootDir +
+      "uploads/61793dbc04f7692a94d06b1d/indents/" +
+      jsonData.body.fileName +
+      ".pdf";
+  }
+  if (jsonData.body.mail_for == "quotation") {
+    fileUrl =
+      rootDir +
+      "uploads/61793dbc04f7692a94d06b1d/quotations/" +
+      jsonData.body.fileName +
+      ".pdf";
+  }
+  if (jsonData.body.mail_for == "PO") {
+    fileUrl =
+      rootDir +
+      "uploads/61793dbc04f7692a94d06b1d/PO/" +
+      jsonData.body.fileName +
+      ".pdf";
+  }
+  console.log("fileurl------", fileUrl);
   let transporter = nodemailer.createTransport(mailConfig.transporter);
   let mailOptions = {
     from: mailConfig.send_from,
     to: jsonData.body.to,
     subject: jsonData.body.subject,
     text: jsonData.body.message,
-    attachments: [{ filename: jsonData.body.fileName + ".pdf", path:  fileUrl}],
+    attachments: [{ filename: jsonData.body.fileName + ".pdf", path: fileUrl }],
     // html: jsonData.body.message.toString(),
   };
   if (jsonData.cc_mail) {
