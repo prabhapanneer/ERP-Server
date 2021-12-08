@@ -44,6 +44,7 @@ const inventorySchema = new mongoose.Schema({
     reference_date: String,
     reference_no: String,
     site_contact_person: String,
+    status: {type: String, default: "inactive"},
     trans_amount: String,
     trans_tax: String,
     type: String,
