@@ -331,7 +331,7 @@ function generateVendorTable(doc, invoice) {
           "grandTotal"
         );
         generateHr(doc, invoiceTop + 20);
-        doc.font("Helvetica")
+        doc.font("Helvetica");
       }
       let position = invoiceTop + (i + 1) * 30;
 
