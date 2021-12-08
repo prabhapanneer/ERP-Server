@@ -2,8 +2,11 @@ const mongoose = require("mongoose");
 const purchaseModel = require("../../models/purchase.model");
 
 exports.getAllPurchase = (req, res) => {
-  purchaseModel.find(
-    { store_id: mongoose.Types.ObjectId(req.id) },
+  purchaseModel.aggregate(
+    [
+      { $match: { store_id: mongoose.Types.ObjectId(req.id) } },
+      { $sort: { _id: -1 } },
+    ],
     function (err, response) {
       if (!err && response) {
         res.json({ status: true, data: response });
