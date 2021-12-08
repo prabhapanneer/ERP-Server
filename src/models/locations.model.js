@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // const locListSchema = new mongoose.Schema({
 //     name: { type: String, required: true },
@@ -23,31 +23,31 @@ const mongoose = require('mongoose');
 // });
 
 const locationSchema = new mongoose.Schema({
-	store_id: { type: mongoose.Schema.Types.ObjectId, required: true },
-    branch_id: { type: mongoose.Schema.Types.ObjectId,default:new mongoose.Types.ObjectId(), required: true },
-    created_on: { type: Date, default: Date.now },  
-    name: { type: String, required: true },
-    mobile: { type: String},
-    address: { type: String },
-    map_url: { type: String },
-    user_id: { type: String },
-    role: { type: String },
-    department: { type: String },
-    short_name: { type: String },
-    locality: { type: String },
-    city: { type: String },
-    contact_person: { type: String },
-    contact_number : { type: String },
-    payment_terms: { type: String },
-    hsn_code: { type: String },
-    gst_no: { type: String },
-    pan_no: { type: String },
-    status: { type: String, default : "active" },
-    emp_id : { type : String },
-    email : { type : String },
-    password : { type : String }
+  store_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  branch_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  created_on: { type: Date, default: Date.now },
+  name: { type: String, required: true },
+  mobile: { type: String },
+  address: { type: String },
+  map_url: { type: String },
+  user_id: { type: String },
+  role: { type: String },
+  department: { type: String },
+  short_name: { type: String },
+  locality: { type: String },
+  city: { type: String },
+  contact_person: { type: String },
+  contact_number: { type: String },
+  payment_terms: { type: String },
+  hsn_code: { type: String },
+  gst_no: { type: String },
+  pan_no: { type: String },
+  status: { type: String, default: "active" },
+  emp_id: { type: String },
+  email: { type: String },
+  password: { type: String },
 });
 
-const collections = mongoose.model('locations', locationSchema);
+const collections = mongoose.model("locations", locationSchema);
 
 module.exports = collections;

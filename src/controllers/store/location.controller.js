@@ -20,8 +20,6 @@ exports.list = (req, res) => {
 };
 
 exports.add = (req, res) => {
-  console.log(req.id);
-  console.log(req.body);
   req.body.store_id = req.id;
   locations.findOne(
     { store_id: mongoose.Types.ObjectId(req.id), name: req.body.name },
