@@ -2,9 +2,11 @@ const mongoose = require("mongoose");
 const indentModel = require("../../models/indents.model");
 
 exports.getAllIndents = (req, res) => {
-  indentModel.aggregate([
-    { $match : { store_id: mongoose.Types.ObjectId(req.id)}} ,
-    { $sort : { _id : -1 } }],
+  indentModel.aggregate(
+    [
+      { $match: { store_id: mongoose.Types.ObjectId(req.id) } },
+      { $sort: { _id: -1 } },
+    ],
     function (err, response) {
       if (!err && response) {
         res.json({ status: true, data: response });
@@ -21,6 +23,7 @@ exports.details = (req, res) => {
       store_id: mongoose.Types.ObjectId(req.id),
       _id: mongoose.Types.ObjectId(req.body._id),
     },
+
     function (err, response) {
       if (!err && response) {
         res.json({ status: true, data: response });
@@ -32,9 +35,7 @@ exports.details = (req, res) => {
 };
 
 exports.createIndent = (req, res) => {
-  
   req.body.store_id = req.id;
-  
   indentModel.create(req.body, function (err, response) {
     if (!err && response) {
       res.json({ status: true, data: response });

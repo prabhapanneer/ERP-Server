@@ -12,7 +12,7 @@ const purchaseList = new mongoose.Schema({
 
 const purchaseSchema = new mongoose.Schema({
   store_id: { type: mongoose.Schema.Types.ObjectId, required: true },
-  branch_id: { type: mongoose.Schema.Types.ObjectId,default:new mongoose.Types.ObjectId(), required: true },
+  branch_id: { type: mongoose.Schema.Types.ObjectId, required: true },
   created_on: { type: Date, default: Date.now },
   emp_id: String,
   prf_number: String,
@@ -30,7 +30,7 @@ const purchaseSchema = new mongoose.Schema({
   reference_no: String,
   reference_date: String,
   po_subject: String,
-  status: {type: String, default: "active"},
+  status: { type: String, default: "active" },
   purchase_list: [purchaseList],
   comp_gstin: String,
   vend_gstin: String,

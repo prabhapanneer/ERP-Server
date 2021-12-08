@@ -7,45 +7,8 @@ const setupConfig = require("../config/setup.config");
 const path = require("path");
 const { AdditionalRecipient } = require("square-connect");
 const rootDir = path.join(__dirname).replace("services", "");
-const mongoose = require("mongoose");
-const indentModel = require("../src/models/indents.model");
-
-// this.storeApi.INDENT_DETAILS({ _id: this.localIndent })
-// indentData = (req, res) => {
-//   console.log("log", req.id);
-//   indentModel.findOne(
-//     {
-//       store_id: mongoose.Types.ObjectId(req.id),
-//       _id: mongoose.Types.ObjectId(req.body._id),
-//     },
-//     function (err, response) {
-//       if (!err && response) {
-//         console.log("if---");
-//         indentNew = response;
-//       } else {
-//         console.log("else---");
-//       }
-//     }
-//   );
-// };.
-
-// indentData = (req) => {
-//   indentModel.findOne(
-//     {
-//       _id: mongoose.Types.ObjectId(req),
-//     },
-//     function (err, response) {
-//       if (!err && response) {
-//         generateIndentTable(response);
-//       } else {
-//         console.log("else---");
-//       }
-//     }
-//   );
-// };
 
 exports.indentPdf = (invoice) => {
-  console.log("invoice----", invoice.body);
   let doc = new PDFDocument({ size: "A4", margin: 50 });
   var filePath;
   var rootPath;
@@ -74,7 +37,9 @@ exports.indentPdf = (invoice) => {
       ".pdf";
     generateHeader(doc);
     generateCustomerInfo(doc, quote);
+    generateIndentTable(doc, quote);
     generateVendorTable(doc, quote);
+    generateSupplierTable(doc, quote);
     // generateSupplierTable(doc, quote);
     // generateFooter(doc);
     rootPath = rootDir + "uploads/" + quote.store_id + "/quotations";
@@ -191,7 +156,6 @@ function generateCustomerInfo(doc, invoice) {
 
   //else--------------
   else {
-    console.log("indent works----");
     doc.text("INDENT FORM", 220, invoiceTableTop - 10);
 
     doc.moveDown();
@@ -285,8 +249,11 @@ function generateSmallVr(doc, x, y) {
 //vendor
 function generateVendorTable(doc, invoice) {
   let vendors = invoice.vendor_list;
-  invoiceTop = 400;
-
+  invoiceTop = doc.y + 100;
+  if (doc.y >= 500) {
+    doc.addPage();
+    invoiceTop = 100;
+  }
   doc
     .font("Times-Roman")
     .fillColor("#444444")
@@ -317,7 +284,7 @@ function generateVendorTable(doc, invoice) {
       "grandTotal"
     );
 
-    generateHr(doc, invoiceTop + 25);
+    // generateHr(doc, invoiceTop + 25);
 
     doc.font("Helvetica");
 
@@ -365,7 +332,6 @@ function generateVendorTable(doc, invoice) {
         );
         generateHr(doc, invoiceTop + 20);
       }
-
       let position = invoiceTop + (i + 1) * 30;
 
       if (i >= 11) {
@@ -373,6 +339,7 @@ function generateVendorTable(doc, invoice) {
         count++;
       }
       doc.font("Helvetica");
+      generateHr(doc, position - 10);
       generateInvoiceTableRow(
         doc,
         position,
@@ -400,13 +367,13 @@ function generateVendorTable(doc, invoice) {
           generateSmallVr(doc, 565, position + 30);
         generateHr(doc, position + 50);
       }
+      doc.font("Helvetica");
       if (i >= 3 && invoiceTop >= 520) {
         console.log("pager");
         doc.addPage();
         invoiceTop = -100;
       }
     }
-    doc.font("Helvetica");
     invoiceTop += 200;
   }
 }
@@ -651,16 +618,26 @@ generateIndentTableRow = (
 //supplier table
 
 generateSupplierTable = (doc, invoice) => {
+  console.log("doc-----", doc.y);
   let suppliers = invoice.supplier_list;
-  if (invoice.requirement_list.length <= 5 && suppliers.length <= 2) {
-    invoiceTop += 150;
-  } else {
-    invoiceTop += 200;
-    if (invoiceTop >= 520) {
-      doc.addPage();
-      invoiceTop = 100;
-    }
+  invoiceTop = doc.y + 100;
+  if (doc.y >= 500) {
+    doc.addPage();
+    invoiceTop = 100;
   }
+  // if (invoice.vendor_list) {
+  //   doc.addPage();
+  //   invoiceTop = 0;
+  // }
+  // if (invoice.requirement_list.length <= 5 && suppliers.length <= 2) {
+  //   invoiceTop += 150;
+  // } else {
+  //   invoiceTop += 200;
+  //   if (invoiceTop >= 520) {
+  //     doc.addPage();
+  //     invoiceTop = 100;
+  //   }
+  // }
   doc
     .font("Times-Roman")
     .fillColor("#444444")
