@@ -60,10 +60,7 @@ const inventorySchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  return_quantity: {
-    type: String,
-    default: "0",
-  },
+  return_quantity: String,
   return_reason: {
     type: String,
     default: "0",
