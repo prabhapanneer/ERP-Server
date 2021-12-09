@@ -22,7 +22,7 @@ const inventorySchema = new mongoose.Schema({
     mobile: String,
     po_date: String,
     po_number: String,
-    quantity: String,
+    quantity: Number,
     return: {
         type: String,
         default: "0"
@@ -57,8 +57,8 @@ const inventorySchema = new mongoose.Schema({
     dc_no: String,
     vehicle_no: String,
     receivedQuantity: {
-        type: String,
-        default: "0"
+        type: Number,
+        default: 0
     },
     return_quantity: {
         type: String,
@@ -68,7 +68,7 @@ const inventorySchema = new mongoose.Schema({
         type: String,
         default: "0"
     },
-
+    orderProgress: {type: Number, default: 0}
 });
 
 const collections = mongoose.model("inventory", inventorySchema);
