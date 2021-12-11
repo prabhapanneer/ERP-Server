@@ -12,6 +12,7 @@ const userlistController = require("../controllers/store/userlist.controller");
 const quoteController = require("../controllers/store/quote.controller");
 const purchaseController = require("../controllers/store/purchase.controller");
 const inventoryController = require("../controllers/store/inventory.controller");
+const stockController = require("../controllers/store/stock.controller");
 
 // locations
 router
@@ -158,6 +159,15 @@ router
   .patch(inventoryController.hard_remove);
 router.route("/inventory/details").post(inventoryController.details);
 
+//Stock
+router
+  .route("/stock")
+  .get(stockController.getAllStock)
+  .post(stockController.createStock)
+  .put(stockController.updateStock);
+// .patch(stockController.soft_remove)
+// .patch(stockController.hard_remove);
+router.route("/stock/details").post(stockController.details);
 // const storeController = require('../controllers/store/store.controller');
 // const catalogController = require('../controllers/store/catalog.controller');
 // const menuController = require('../controllers/store/menu.controller');
